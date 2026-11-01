@@ -10,6 +10,12 @@ Madevi has one shared control plane with three interfaces: Madevi CLI, Madevi St
 
 > Status: early foundation. The CLI in this repository is dependency-free and safe by default; it does not execute project code or server actions yet.
 
+## Studio preview
+
+![Madevi Studio deployment plan preview](docs/assets/madevi-studio-preview.jpg)
+
+The Studio design is chat-first: the active task and approval flow stay in the workspace, while project, model, deploy, monitor, and security controls live in the right-side control panel.
+
 ## Quick start
 
 Requires Node.js 20 or newer.
@@ -20,6 +26,16 @@ cd Madevi-Agent
 npm run cli -- init
 npm run cli -- status
 ~~~
+
+### One-command install
+
+For Linux and macOS with Git and Node.js 20 or newer:
+
+~~~
+curl -fsSL https://raw.githubusercontent.com/Madevi810/Madevi-Agent/main/scripts/install.sh | bash
+~~~
+
+The installer uses ~/.local/share/madevi, creates ~/.local/bin/madevi, preserves an installation with uncommitted changes, and never uses sudo. If ~/.local/bin is not on PATH, it prints the one-line PATH command to add.
 
 Useful starter commands:
 
