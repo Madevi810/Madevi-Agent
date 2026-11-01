@@ -44,9 +44,15 @@ npm run cli -- model list
 npm run cli -- model use gpt-coder
 npm run cli -- monitor on
 npm run cli -- monitor status
+npm run cli -- task create "Inspect deployment logs"
+npm run cli -- plan list
+npm run cli -- plan approve plan-1
+npm run cli -- audit
 ~~~
 
 Configuration is stored locally in ~/.madevi/config.json. Set MADEVI_HOME to use a different directory.
+
+Madevi starts with no active AI model. Select a configured profile explicitly with `model use`, or add a custom provider in the configuration before authorizing work.
 
 ## Repository map
 

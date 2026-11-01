@@ -7,7 +7,7 @@ export const DEFAULT_CONFIG = Object.freeze({
   agent: { name: "Madevi", updateChannel: "stable" },
   workspace: { activeProject: null },
   model: {
-    active: "gpt-coder",
+    active: null,
     profiles: [
       { id: "gpt-coder", provider: "OpenAI", label: "GPT Coder", source: "managed" },
       { id: "claude-code", provider: "Anthropic", label: "Claude Code", source: "managed" },
