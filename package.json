@@ -1,0 +1,19 @@
+{
+  "name": "@madevi/agent",
+  "version": "0.1.0",
+  "description": "Open-source agent runtime for workspace automation, deployment, and optional server monitoring.",
+  "type": "module",
+  "private": false,
+  "bin": {
+    "madevi": "./apps/cli/bin/madevi.mjs"
+  },
+  "scripts": {
+    "cli": "node apps/cli/bin/madevi.mjs",
+    "test": "node --test",
+    "check": "node --check apps/cli/bin/madevi.mjs && node --check packages/core/src/config.mjs && node --check packages/policy/src/rules.mjs && node --check services/monitor/src/sentinel.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "Apache-2.0"
+}
