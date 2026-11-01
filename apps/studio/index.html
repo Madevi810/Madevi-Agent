@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Madevi Studio</title>
+    <style>
+      :root{color-scheme:dark;--bg:#101114;--surface:#18191f;--line:#30323a;--text:#f2f3f5;--muted:#989daa;--accent:#a993ff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,system-ui,sans-serif}header{height:60px;display:flex;align-items:center;gap:12px;padding:0 28px;border-bottom:1px solid #22242b}.mark{width:28px;height:28px;display:grid;place-items:center;border:1px solid #5e51a8;border-radius:8px;color:#c9beff;background:#211d35;font-weight:800;font-size:12px}header b{letter-spacing:-.2px}header small{color:#777c89;letter-spacing:.1em;margin-left:6px}header button{margin-left:auto;color:#e8e4ff;background:#201b38;border:1px solid #473d7b;border-radius:7px;padding:8px 10px}main{width:min(880px,calc(100% - 32px));margin:0 auto;padding:54px 0 28px}.eyebrow{color:var(--muted);font-size:11px}h1{margin:9px 0 28px;letter-spacing:-.8px}.thread{border-top:1px solid #22242b;border-bottom:1px solid #22242b;padding:26px 0}.message{display:grid;grid-template-columns:30px 1fr;gap:12px;max-width:720px}.avatar{width:30px;height:30px;display:grid;place-items:center;border:1px solid #5e51a8;border-radius:8px;color:#c9beff;background:#211d35;font-size:11px;font-weight:800}.message p{margin:3px 0;color:#d7d9df;line-height:1.6}.message small{color:#858b99}.composer{margin-top:22px;padding:9px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}input{width:100%;border:0;outline:0;background:transparent;color:var(--text);padding:7px}.composer footer{display:flex;justify-content:space-between;align-items:center;padding-top:7px}select,.send{border:1px solid var(--line);border-radius:6px;background:#252630;color:#d9dce4;padding:6px 8px;font-size:11px}.send{color:#181326;background:#b7a2ff;border-color:#b7a2ff;font-weight:700}
+    </style>
+  </head>
+  <body>
+    <header><div class="mark">M</div><b>Madevi <small>AGENT STUDIO</small></b><button>☰ Control panel</button></header>
+    <main><div class="eyebrow">● Session online · workspace mode</div><h1>What would you like to work on?</h1><section class="thread"><article class="message"><div class="avatar">M</div><div><b>Madevi</b> <small>now</small><p>Welcome. Connect a model, create a project workspace, or enable Monitor Control when this agent runs on a server.</p></div></article></section><form class="composer"><input placeholder="Ask Madevi to plan, inspect, build, deploy, or investigate…" /><footer><select aria-label="Model"><option>OpenAI · GPT Coder</option><option>Anthropic · Claude Code</option><option>Custom API · Internal LLM</option><option>Local · Qwen Coder</option></select><button class="send">Send</button></footer></form></main>
+  </body>
+</html>
