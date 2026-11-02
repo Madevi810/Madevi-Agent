@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { readConfig, writeConfig } from "../../../packages/core/src/config.mjs";
 import { readState, writeState } from "../../../packages/core/src/state.mjs";
 import { approvePlan, createTaskWithPlan, findPlan, findTask } from "../../../packages/core/src/workflow.mjs";
@@ -7,6 +9,7 @@ import { closeSession, createProject, findProject, startSession } from "../../..
 import { policyDecision } from "../../../packages/policy/src/rules.mjs";
 import { createSystemSnapshot, monitorStatus } from "../../../services/monitor/src/sentinel.mjs";
 import { acknowledgeIncident, evaluateSnapshot, recordIncident } from "../../../services/monitor/src/incidents.mjs";
+import { daemonUrl, isProcessAlive, readDaemonState, removeDaemonState } from "../../../packages/core/src/daemon.mjs";
 
 const [command = "help", subcommand, ...remaining] = process.argv.slice(2);
 const value = remaining.join(" ");
@@ -17,10 +20,11 @@ function print(output) {
 
 function help() {
   print([
-    "Madevi CLI v0.1.4",
+    "Madevi CLI v0.1.5",
     "",
     "Usage:",
     "  madevi init",
+    "  madevi daemon start|stop|status|url",
     "  madevi status",
     "  madevi model list",
     "  madevi model use <model-id>",
@@ -44,10 +48,47 @@ function help() {
 
 async function main() {
   if (["help", "--help", "-h"].includes(command)) return help();
-  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.4");
+  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.5");
 
   const { path, config } = await readConfig();
   if (command === "init") return print({ initialized: true, configPath: path, mode: "workspace" });
+  if (command === "daemon" && subcommand === "status") {
+    const state = await readDaemonState();
+    return print({ running: Boolean(state && isProcessAlive(state.pid)), daemon: state });
+  }
+  if (command === "daemon" && subcommand === "url") {
+    const state = await readDaemonState();
+    return print({ url: state?.url || daemonUrl() });
+  }
+  if (command === "daemon" && subcommand === "start") {
+    const existing = await readDaemonState();
+    if (existing && isProcessAlive(existing.pid)) return print({ started: false, alreadyRunning: true, daemon: existing });
+    const entry = fileURLToPath(new URL("../../daemon/bin/madevi-daemon.mjs", import.meta.url));
+    const child = spawn(process.execPath, [entry], { detached: true, stdio: "ignore", env: process.env });
+    child.unref();
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const state = await readDaemonState();
+      if (state && isProcessAlive(state.pid)) return print({ started: true, daemon: state });
+    }
+    throw new Error("Daemon did not become ready. Run 'madevi daemon status' for details.");
+  }
+  if (command === "daemon" && subcommand === "stop") {
+    const state = await readDaemonState();
+    if (!state || !isProcessAlive(state.pid)) {
+      await removeDaemonState();
+      return print({ stopped: false, message: "No Madevi daemon is running." });
+    }
+    process.kill(state.pid, "SIGTERM");
+    for (let attempt = 0; attempt < 30; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (!isProcessAlive(state.pid)) {
+        await removeDaemonState();
+        return print({ stopped: true, daemon: state });
+      }
+    }
+    throw new Error("Daemon did not stop within three seconds.");
+  }
   if (command === "status") {
     const activeModel = config.model.profiles.find((profile) => profile.id === config.model.active) || null;
     const { state } = await readState();

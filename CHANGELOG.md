@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5
+
+- Add a loopback-only Madevi Core daemon with health, status, and action-manifest endpoints.
+- Add CLI lifecycle commands for the local daemon.
+- Add daemon API integration coverage.
+
 ## 0.1.4
 
 - Begin the Madevi runtime rebuild with a source-level benchmark of public agent repositories.

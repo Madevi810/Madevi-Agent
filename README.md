@@ -29,6 +29,8 @@ git clone https://github.com/Madevi810/Madevi-Agent.git
 cd Madevi-Agent
 npm run cli -- init
 npm run cli -- status
+npm run cli -- daemon start
+npm run cli -- daemon url
 ~~~
 
 ### One-command install
@@ -65,6 +67,10 @@ npm run cli -- action show deploy.release
 Configuration is stored locally in ~/.madevi/config.json. Set MADEVI_HOME to use a different directory.
 
 Madevi starts with no active AI model. Select a configured profile explicitly with `model use`, or add custom provider metadata with `model add`. API keys are deliberately excluded from configuration; inject them through an OS keychain, vault, or environment provider.
+
+### Local control endpoint
+
+`madevi daemon start` starts the early Madevi Core service on `http://127.0.0.1:8787`. It is loopback-only and currently exposes read-only health, status, and action-manifest endpoints. Visual Mode will become a client of this service during the rebuild.
 
 ## Repository map
 
