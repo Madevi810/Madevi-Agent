@@ -49,10 +49,14 @@ Useful starter commands:
 npm run cli -- model list
 npm run cli -- model use gpt-coder
 npm run cli -- model add team-model Acme "Team Code Model"
+npm run cli -- model connect team-model https://provider.example/v1 model-name MADEVI_MODEL_API_KEY
 npm run cli -- auth status
 npm run cli -- project create "madevi-web"
 npm run cli -- project use project-1
 npm run cli -- session start "Prepare release"
+npm run cli -- agent start "Plan authentication"
+npm run cli -- agent mode session-1 plan
+npm run cli -- agent send session-1 "Analyze the current auth design"
 npm run cli -- monitor on
 npm run cli -- monitor status
 npm run cli -- monitor check

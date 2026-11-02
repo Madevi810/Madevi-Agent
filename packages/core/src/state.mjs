@@ -20,6 +20,10 @@ export function normalizeState(value) {
   for (const collection of ["tasks", "plans", "projects", "sessions", "incidents", "audit"]) {
     if (!Array.isArray(state[collection])) state[collection] = [];
   }
+  for (const session of state.sessions) {
+    if (!Array.isArray(session.messages)) session.messages = [];
+    if (!session.mode) session.mode = "ask";
+  }
   return state;
 }
 

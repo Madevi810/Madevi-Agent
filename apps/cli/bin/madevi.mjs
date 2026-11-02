@@ -10,6 +10,8 @@ import { policyDecision } from "../../../packages/policy/src/rules.mjs";
 import { createSystemSnapshot, monitorStatus } from "../../../services/monitor/src/sentinel.mjs";
 import { acknowledgeIncident, evaluateSnapshot, recordIncident } from "../../../services/monitor/src/incidents.mjs";
 import { daemonUrl, isProcessAlive, readDaemonState, removeDaemonState } from "../../../packages/core/src/daemon.mjs";
+import { appendMessage, createAgentSession, setAgentMode, systemPromptForMode } from "../../../packages/core/src/agent-session.mjs";
+import { completeWithProfile } from "../../../packages/core/src/provider.mjs";
 
 const [command = "help", subcommand, ...remaining] = process.argv.slice(2);
 const value = remaining.join(" ");
@@ -20,7 +22,7 @@ function print(output) {
 
 function help() {
   print([
-    "Madevi CLI v0.1.5",
+    "Madevi CLI v0.1.6",
     "",
     "Usage:",
     "  madevi init",
@@ -29,12 +31,17 @@ function help() {
     "  madevi model list",
     "  madevi model use <model-id>",
     "  madevi model add <id> <provider> <label>",
+    "  madevi model connect <id> <base-url> <model> <api-key-env>",
     "  madevi model remove <model-id>",
     "  madevi auth status",
     "  madevi project create <name>",
     "  madevi project list|use <project-id>",
     "  madevi session start <title>",
     "  madevi session list|close <session-id>",
+    "  madevi agent start <title>",
+    "  madevi agent list|show <session-id>",
+    "  madevi agent mode <session-id> <ask|plan|build|review|operate|assist>",
+    "  madevi agent send <session-id> <prompt>",
     "  madevi task create <title>",
     "  madevi task list|show <task-id>",
     "  madevi plan list|show <plan-id>|approve <plan-id>",
@@ -48,7 +55,7 @@ function help() {
 
 async function main() {
   if (["help", "--help", "-h"].includes(command)) return help();
-  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.5");
+  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.6");
 
   const { path, config } = await readConfig();
   if (command === "init") return print({ initialized: true, configPath: path, mode: "workspace" });
@@ -119,6 +126,16 @@ async function main() {
     await writeConfig(config);
     return print({ removed: true, profile: removed, activeModel: config.model.active });
   }
+  if (command === "model" && subcommand === "connect") {
+    const [id, baseUrl, model, apiKeyEnv] = remaining;
+    const profile = config.model.profiles.find((item) => item.id === id);
+    if (!profile || !baseUrl || !model || !apiKeyEnv) throw new Error("Usage: madevi model connect <id> <base-url> <model> <api-key-env>");
+    if (!/^https?:\/\//.test(baseUrl)) throw new Error("Model base URL must start with http:// or https://");
+    if (!/^[A-Z][A-Z0-9_]*$/.test(apiKeyEnv)) throw new Error("Credential environment variable must be uppercase letters, digits, and underscores.");
+    Object.assign(profile, { baseUrl, model, apiKeyEnv });
+    await writeConfig(config);
+    return print({ connected: true, profile: { ...profile, apiKeyEnv }, note: "The key itself remains only in the environment." });
+  }
   if (command === "auth" && subcommand === "status") {
     return print({ configured: false, provider: null, message: "Credential storage is intentionally not implemented in this starter. Use an OS keychain, vault, or environment injection; never save API keys in Madevi configuration." });
   }
@@ -155,6 +172,44 @@ async function main() {
     const session = closeSession(state, value);
     await writeState(state);
     return print({ closed: true, session });
+  }
+  if (command === "agent" && subcommand === "start") {
+    const { state } = await readState();
+    const session = createAgentSession(state, { title: value, projectId: config.workspace.activeProject, modelId: config.model.active });
+    await writeState(state);
+    return print({ started: true, session });
+  }
+  if (command === "agent" && subcommand === "list") {
+    const { state } = await readState();
+    return print(state.sessions.map(({ messages, ...session }) => ({ ...session, messageCount: messages?.length || 0 })));
+  }
+  if (command === "agent" && subcommand === "show") {
+    const { state } = await readState();
+    const session = state.sessions.find((item) => item.id === value);
+    if (!session) throw new Error("Session not found: " + value);
+    return print(session);
+  }
+  if (command === "agent" && subcommand === "mode") {
+    const [sessionId, mode] = remaining;
+    const { state } = await readState();
+    const session = setAgentMode(state, sessionId, mode);
+    await writeState(state);
+    return print({ updated: true, session });
+  }
+  if (command === "agent" && subcommand === "send") {
+    const [sessionId, ...promptParts] = remaining;
+    const prompt = promptParts.join(" ");
+    const { state } = await readState();
+    const session = state.sessions.find((item) => item.id === sessionId);
+    if (!session) throw new Error("Session not found: " + sessionId);
+    const profile = config.model.profiles.find((item) => item.id === session.modelId);
+    appendMessage(state, session.id, { role: "user", content: prompt });
+    await writeState(state);
+    const messages = [{ role: "system", content: systemPromptForMode(session.mode) }, ...session.messages.map(({ role, content }) => ({ role, content }))];
+    const response = await completeWithProfile(profile, messages);
+    const assistant = appendMessage(state, session.id, { role: "assistant", content: response, actor: "provider:" + profile.id });
+    await writeState(state);
+    return print({ sessionId: session.id, mode: session.mode, assistant });
   }
   if (command === "task" && subcommand === "create") {
     const { state } = await readState();

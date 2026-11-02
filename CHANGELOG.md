@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- Add persistent agent transcripts and Ask, Plan, Build, Review, Operate, and Assist session modes.
+- Add an opt-in OpenAI-compatible text provider adapter with environment-only credentials.
+- Add CLI commands for model connection, agent sessions, mode selection, and turns.
+
 ## 0.1.5
 
 - Add a loopback-only Madevi Core daemon with health, status, and action-manifest endpoints.
