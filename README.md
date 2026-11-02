@@ -6,15 +6,19 @@ Madevi is an open-source, self-hosted agent platform for three connected jobs:
 - **Deploy** — verify infrastructure, release projects, validate health, and roll back safely.
 - **Monitor Control** — optional low-cost server monitoring, incident handling, and scheduled audits.
 
-Madevi has one shared control plane with three interfaces: Madevi CLI, Madevi Studio, and Madevi Bot. A task, approval, or incident has the same state in every interface.
+Madevi is being rebuilt around one shared runtime. CLI, Visual Mode, Telegram, and Madevi Assist will call the same action contracts, policy engine, state, and audit trail.
 
 > Status: early foundation. The CLI in this repository is dependency-free and safe by default; it does not execute project code or server actions yet.
 
-## Studio preview
+## Visual Mode preview
 
-![Madevi Studio deployment plan preview](docs/assets/madevi-studio-preview.jpg)
+![Madevi Agent Visual Mode deployment plan preview](docs/assets/madevi-studio-preview.jpg)
 
-The Studio design is chat-first: the active task and approval flow stay in the workspace, while project, model, deploy, monitor, and security controls live in the right-side control panel.
+Visual Mode is chat-first: the active task and approval flow stay in the workspace, while project, model, deploy, monitor, assistant, and security controls live in the right-side control panel. The current preview is being replaced by a daemon-backed interface.
+
+## Runtime rebuild
+
+The repository is progressing through a public, tested rebuild from the starter into a durable agent runtime. Read the [architecture](docs/architecture-v2.md), [source benchmark](docs/reference-benchmark.md), and [release plan](docs/release-plan.md) before relying on a future capability.
 
 ## Quick start
 
@@ -66,7 +70,8 @@ Madevi starts with no active AI model. Select a configured profile explicitly wi
 
 ~~~
 apps/cli/          Command-line interface
-apps/studio/       Static Madevi Studio shell
+apps/studio/       Legacy static preview; replaced by Visual Mode during the rebuild
+packages/contracts/ Shared action contracts for every Madevi interface
 packages/core/     Configuration and shared action contracts
 packages/policy/   Risk tiers and approval rules
 services/monitor/  Token-free system snapshot sentinel

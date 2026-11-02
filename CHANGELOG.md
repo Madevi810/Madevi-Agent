@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Begin the Madevi runtime rebuild with a source-level benchmark of public agent repositories.
+- Add shared action contracts as the foundation for future CLI, Visual Mode, Telegram, and Assist parity.
+- Publish the v2 architecture and patch-by-patch release plan.
+
 ## 0.1.3
 
 - Add deterministic Monitor Control threshold evaluation and incident lifecycle commands.
