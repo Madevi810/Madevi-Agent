@@ -1,6 +1,6 @@
 {
   "name": "@madevi/agent",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Open-source agent runtime for workspace automation, deployment, and optional server monitoring.",
   "type": "module",
   "private": false,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+
+- Add daemon-served Madevi Agent Visual Mode with live Core status and action manifest.
+
 ## 0.1.6
 
 - Add persistent agent transcripts and Ask, Plan, Build, Review, Operate, and Assist session modes.

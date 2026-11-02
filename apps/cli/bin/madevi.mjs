@@ -22,7 +22,7 @@ function print(output) {
 
 function help() {
   print([
-    "Madevi CLI v0.1.6",
+    "Madevi CLI v0.1.7",
     "",
     "Usage:",
     "  madevi init",
@@ -55,7 +55,7 @@ function help() {
 
 async function main() {
   if (["help", "--help", "-h"].includes(command)) return help();
-  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.6");
+  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.7");
 
   const { path, config } = await readConfig();
   if (command === "init") return print({ initialized: true, configPath: path, mode: "workspace" });

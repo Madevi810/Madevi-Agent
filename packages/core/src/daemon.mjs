@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { actionManifest } from "../../contracts/src/action-contract.mjs";
 import { ACTIONS } from "./actions.mjs";
 import { madeviHome, readConfig } from "./config.mjs";
@@ -64,6 +65,8 @@ function json(response, status, body) {
   response.end(JSON.stringify(body));
 }
 
+const visualIndex = fileURLToPath(new URL("../../../apps/visual/index.html", import.meta.url));
+
 /** Starts a loopback-only control server. No mutation endpoint is exposed at this stage. */
 export async function startControlServer({ host = DEFAULT_HOST, port = DEFAULT_PORT, home, persist = true } = {}) {
   if (host !== "127.0.0.1" && host !== "::1" && host !== "localhost") {
@@ -72,6 +75,11 @@ export async function startControlServer({ host = DEFAULT_HOST, port = DEFAULT_P
   const server = createServer(async (request, response) => {
     const url = new URL(request.url || "/", daemonUrl({ host, port }));
     if (request.method !== "GET") return json(response, 405, { error: "method_not_allowed" });
+    if (url.pathname === "/" || url.pathname === "/index.html") {
+      const html = await readFile(visualIndex, "utf8");
+      response.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
+      return response.end(html);
+    }
     if (url.pathname === "/health") return json(response, 200, { ok: true, service: "madevi-agent" });
     if (url.pathname === "/v1/status") return json(response, 200, await controlStatus(home));
     if (url.pathname === "/v1/actions") {
