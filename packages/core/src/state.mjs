@@ -4,11 +4,12 @@ import { madeviHome } from "./config.mjs";
 
 export const DEFAULT_STATE = Object.freeze({
   schemaVersion: 1,
-  counters: { task: 1, plan: 1, audit: 1, project: 1, session: 1 },
+  counters: { task: 1, plan: 1, audit: 1, project: 1, session: 1, incident: 1 },
   tasks: [],
   plans: [],
   projects: [],
   sessions: [],
+  incidents: [],
   audit: []
 });
 
@@ -16,7 +17,7 @@ export function normalizeState(value) {
   const state = value && typeof value === "object" ? value : {};
   state.schemaVersion = 1;
   state.counters = { ...DEFAULT_STATE.counters, ...(state.counters || {}) };
-  for (const collection of ["tasks", "plans", "projects", "sessions", "audit"]) {
+  for (const collection of ["tasks", "plans", "projects", "sessions", "incidents", "audit"]) {
     if (!Array.isArray(state[collection])) state[collection] = [];
   }
   return state;

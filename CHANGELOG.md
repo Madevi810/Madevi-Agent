@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Add deterministic Monitor Control threshold evaluation and incident lifecycle commands.
+- Store monitor incidents and acknowledgements in the shared audit trail.
+- Keep remediation manual: threshold detection never changes a server by itself.
+
 ## 0.1.2
 
 - Add CLI project and model-bound session lifecycle with persistent audit records.

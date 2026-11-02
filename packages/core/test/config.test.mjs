@@ -3,12 +3,13 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { readConfig, writeConfig } from "../src/config.mjs";
+import { normalizeConfig, readConfig, writeConfig } from "../src/config.mjs";
 import { readState, writeState } from "../src/state.mjs";
 import { findAction } from "../src/actions.mjs";
 import { approvePlan, createTaskWithPlan } from "../src/workflow.mjs";
 import { closeSession, createProject, startSession } from "../src/workspace.mjs";
 import { policyDecision } from "../../policy/src/rules.mjs";
+import { evaluateSnapshot, recordIncident } from "../../../services/monitor/src/incidents.mjs";
 
 test("Madevi creates isolated default configuration", async () => {
   const home = await mkdtemp(join(tmpdir(), "madevi-test-"));
@@ -26,6 +27,12 @@ test("Madevi creates isolated default configuration", async () => {
   } finally {
     await rm(home, { recursive: true, force: true });
   }
+});
+
+test("configuration migration supplies new monitor thresholds", () => {
+  const migrated = normalizeConfig({ monitor: { enabled: true } });
+  assert.equal(migrated.monitor.enabled, true);
+  assert.equal(migrated.monitor.thresholds.memoryCriticalPercent, 95);
 });
 
 test("task, draft plan, approval, and audit persist together", async () => {
@@ -74,4 +81,19 @@ test("monitor containment stays blocked until monitoring is enabled", () => {
     reason: "Monitor Control is disabled."
   });
   assert.equal(policyDecision(action, { monitorEnabled: true }).approval, "policy-defined");
+});
+
+test("sentinel opens an incident only after a threshold is crossed", async () => {
+  const home = await mkdtemp(join(tmpdir(), "madevi-incident-"));
+  try {
+    const snapshot = { capturedAt: "2026-11-02T00:00:00.000Z", cpuCount: 2, loadAverage: [4.5, 0, 0], memory: { usedPercent: 96 } };
+    const report = evaluateSnapshot(snapshot, { memoryWarningPercent: 85, memoryCriticalPercent: 95, loadWarningPerCpu: 1.25, loadCriticalPerCpu: 2 });
+    assert.equal(report.level, "critical");
+    const { state } = await readState(home);
+    const incident = recordIncident(state, report);
+    assert.equal(incident.status, "open");
+    assert.equal(state.audit[0].type, "incident.opened");
+  } finally {
+    await rm(home, { recursive: true, force: true });
+  }
 });

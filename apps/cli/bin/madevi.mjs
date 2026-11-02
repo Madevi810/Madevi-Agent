@@ -5,7 +5,8 @@ import { approvePlan, createTaskWithPlan, findPlan, findTask } from "../../../pa
 import { ACTIONS, findAction } from "../../../packages/core/src/actions.mjs";
 import { closeSession, createProject, findProject, startSession } from "../../../packages/core/src/workspace.mjs";
 import { policyDecision } from "../../../packages/policy/src/rules.mjs";
-import { monitorStatus } from "../../../services/monitor/src/sentinel.mjs";
+import { createSystemSnapshot, monitorStatus } from "../../../services/monitor/src/sentinel.mjs";
+import { acknowledgeIncident, evaluateSnapshot, recordIncident } from "../../../services/monitor/src/incidents.mjs";
 
 const [command = "help", subcommand, ...remaining] = process.argv.slice(2);
 const value = remaining.join(" ");
@@ -16,7 +17,7 @@ function print(output) {
 
 function help() {
   print([
-    "Madevi CLI v0.1.2",
+    "Madevi CLI v0.1.3",
     "",
     "Usage:",
     "  madevi init",
@@ -35,14 +36,15 @@ function help() {
     "  madevi plan list|show <plan-id>|approve <plan-id>",
     "  madevi audit [limit]",
     "  madevi action list|show <action-id>",
-    "  madevi monitor on|off|status",
+    "  madevi monitor on|off|status|check",
+    "  madevi monitor incidents|acknowledge <incident-id>",
     "  madevi version"
   ].join("\n"));
 }
 
 async function main() {
   if (["help", "--help", "-h"].includes(command)) return help();
-  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.2");
+  if (["version", "--version"].includes(command)) return print("Madevi CLI v0.1.3");
 
   const { path, config } = await readConfig();
   if (command === "init") return print({ initialized: true, configPath: path, mode: "workspace" });
@@ -169,6 +171,25 @@ async function main() {
     config.monitor.enabled = subcommand === "on";
     await writeConfig(config);
     return print({ updated: true, monitorEnabled: config.monitor.enabled, message: config.monitor.enabled ? "Monitor Control enabled. Sentinel can run without LLM tokens." : "Monitor Control disabled. Workspace agent remains available." });
+  }
+  if (command === "monitor" && subcommand === "check") {
+    if (!config.monitor.enabled) throw new Error("Monitor Control is disabled. Run 'madevi monitor on' before checks.");
+    const snapshot = createSystemSnapshot();
+    const report = evaluateSnapshot(snapshot, config.monitor.thresholds);
+    const { state } = await readState();
+    const incident = recordIncident(state, report);
+    if (incident) await writeState(state);
+    return print({ snapshot, report, incident, message: incident ? "Incident recorded. Madevi has not remediated anything automatically." : "No incident threshold was reached." });
+  }
+  if (command === "monitor" && subcommand === "incidents") {
+    const { state } = await readState();
+    return print(state.incidents);
+  }
+  if (command === "monitor" && subcommand === "acknowledge") {
+    const { state } = await readState();
+    const incident = acknowledgeIncident(state, value);
+    await writeState(state);
+    return print({ acknowledged: true, incident });
   }
   if (command === "monitor" && subcommand === "status") return print(monitorStatus(config));
   throw new Error("Unknown command: " + [command, subcommand, value].filter(Boolean).join(" "));

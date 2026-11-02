@@ -15,9 +15,26 @@ export const DEFAULT_CONFIG = Object.freeze({
       { id: "qwen-coder", provider: "Local", label: "Qwen Coder", source: "local" }
     ]
   },
-  monitor: { enabled: false, auditIntervalHours: 12 },
+  monitor: {
+    enabled: false,
+    auditIntervalHours: 12,
+    thresholds: { memoryWarningPercent: 85, memoryCriticalPercent: 95, loadWarningPerCpu: 1.25, loadCriticalPerCpu: 2 }
+  },
   policy: { profile: "safe-edit" }
 });
+
+export function normalizeConfig(value) {
+  const config = value && typeof value === "object" ? value : {};
+  config.schemaVersion = 1;
+  config.agent = { ...DEFAULT_CONFIG.agent, ...(config.agent || {}) };
+  config.workspace = { ...DEFAULT_CONFIG.workspace, ...(config.workspace || {}) };
+  config.model = { ...DEFAULT_CONFIG.model, ...(config.model || {}) };
+  if (!Array.isArray(config.model.profiles)) config.model.profiles = [...DEFAULT_CONFIG.model.profiles];
+  config.monitor = { ...DEFAULT_CONFIG.monitor, ...(config.monitor || {}) };
+  config.monitor.thresholds = { ...DEFAULT_CONFIG.monitor.thresholds, ...(config.monitor.thresholds || {}) };
+  config.policy = { ...DEFAULT_CONFIG.policy, ...(config.policy || {}) };
+  return config;
+}
 
 export function madeviHome(home = process.env.MADEVI_HOME) {
   return home || join(homedir(), ".madevi");
@@ -41,7 +58,7 @@ export async function initializeConfig(home) {
 
 export async function readConfig(home) {
   const path = await initializeConfig(home);
-  return { path, config: JSON.parse(await readFile(path, "utf8")) };
+  return { path, config: normalizeConfig(JSON.parse(await readFile(path, "utf8"))) };
 }
 
 export async function writeConfig(config, home) {

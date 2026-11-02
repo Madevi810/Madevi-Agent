@@ -49,6 +49,8 @@ npm run cli -- project use project-1
 npm run cli -- session start "Prepare release"
 npm run cli -- monitor on
 npm run cli -- monitor status
+npm run cli -- monitor check
+npm run cli -- monitor incidents
 npm run cli -- task create "Inspect deployment logs"
 npm run cli -- plan list
 npm run cli -- plan approve plan-1
@@ -74,6 +76,7 @@ docs/              Architecture notes
 ## Safety model
 
 - Monitoring is disabled until explicitly enabled.
+- The token-free sentinel can create incidents from deterministic host thresholds; it never remediates a server on its own in this starter.
 - The default policy is read-only / safe-edit; destructive server actions are not implemented in the starter.
 - Future tools must declare risk, required permission, approval rule, verification, and rollback behavior.
 - Secrets belong in a vault provider, never in Telegram chat or repository files.
