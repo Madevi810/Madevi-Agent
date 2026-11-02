@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Add CLI project and model-bound session lifecycle with persistent audit records.
+- Add safe custom model metadata management and explicit credential-storage guidance.
+- Add action contract inspection with current policy decisions.
+- Replace the Studio shell with an interactive, responsive control-plane prototype.
+
 ## 0.1.1
 
 - Add persistent task, plan, approval, and audit lifecycle for Madevi CLI.

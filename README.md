@@ -42,17 +42,23 @@ Useful starter commands:
 ~~~
 npm run cli -- model list
 npm run cli -- model use gpt-coder
+npm run cli -- model add team-model Acme "Team Code Model"
+npm run cli -- auth status
+npm run cli -- project create "madevi-web"
+npm run cli -- project use project-1
+npm run cli -- session start "Prepare release"
 npm run cli -- monitor on
 npm run cli -- monitor status
 npm run cli -- task create "Inspect deployment logs"
 npm run cli -- plan list
 npm run cli -- plan approve plan-1
 npm run cli -- audit
+npm run cli -- action show deploy.release
 ~~~
 
 Configuration is stored locally in ~/.madevi/config.json. Set MADEVI_HOME to use a different directory.
 
-Madevi starts with no active AI model. Select a configured profile explicitly with `model use`, or add a custom provider in the configuration before authorizing work.
+Madevi starts with no active AI model. Select a configured profile explicitly with `model use`, or add custom provider metadata with `model add`. API keys are deliberately excluded from configuration; inject them through an OS keychain, vault, or environment provider.
 
 ## Repository map
 

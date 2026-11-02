@@ -7,6 +7,7 @@ import { readConfig, writeConfig } from "../src/config.mjs";
 import { readState, writeState } from "../src/state.mjs";
 import { findAction } from "../src/actions.mjs";
 import { approvePlan, createTaskWithPlan } from "../src/workflow.mjs";
+import { closeSession, createProject, startSession } from "../src/workspace.mjs";
 import { policyDecision } from "../../policy/src/rules.mjs";
 
 test("Madevi creates isolated default configuration", async () => {
@@ -43,6 +44,24 @@ test("task, draft plan, approval, and audit persist together", async () => {
     assert.equal(restored.state.tasks[0].status, "ready");
     assert.equal(restored.state.plans[0].status, "approved");
     assert.equal(restored.state.audit[0].type, "plan.approved");
+  } finally {
+    await rm(home, { recursive: true, force: true });
+  }
+});
+
+test("project and model-bound session persist with a full audit trail", async () => {
+  const home = await mkdtemp(join(tmpdir(), "madevi-session-"));
+  try {
+    const { state } = await readState(home);
+    const project = createProject(state, { name: "Madevi web" });
+    const session = startSession(state, { title: "Prepare release", projectId: project.id, modelId: "gpt-coder" });
+    closeSession(state, session.id, { actor: "developer" });
+    await writeState(state, home);
+
+    const restored = await readState(home);
+    assert.equal(restored.state.projects[0].name, "Madevi web");
+    assert.equal(restored.state.sessions[0].status, "closed");
+    assert.equal(restored.state.audit[0].type, "session.closed");
   } finally {
     await rm(home, { recursive: true, force: true });
   }
