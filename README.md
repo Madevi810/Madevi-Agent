@@ -18,7 +18,7 @@ Visual Mode is chat-first: the active task and approval flow stay in the workspa
 
 ## Runtime rebuild
 
-The repository is progressing through a public, tested rebuild from the starter into a durable agent harness. Read the [harness definition](docs/harness.md), [architecture](docs/architecture-v2.md), [source benchmark](docs/reference-benchmark.md), and [release plan](docs/release-plan.md) before relying on a future capability.
+The repository is progressing through a public, tested rebuild from the starter into a durable agent harness. Read the [harness definition](docs/harness.md), [architecture](docs/architecture-v2.md), [forensic baseline and construction strategy](docs/forensic-roadmap.md), [source benchmark](docs/reference-benchmark.md), and [release plan](docs/release-plan.md) before relying on a future capability.
 
 ## Quick start
 
