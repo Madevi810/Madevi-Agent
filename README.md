@@ -8,7 +8,7 @@ Madevi Harness is an open-source, self-hosted agent harness for three connected 
 
 It is being rebuilt around one shared runtime. CLI, Visual Mode, Telegram, and Madevi Assist call the same action contracts, policy engine, state, and audit trail. They are interfaces and first-party modules of one harness—not separate products.
 
-> Status: early foundation. The CLI in this repository is dependency-free and safe by default; it does not execute project code or server actions yet.
+> Status: early foundation. The CLI can run a bounded model/tool loop, list and read workspace files, and propose writes in build mode with per-write terminal approval. It does not execute shell commands or server actions. Workspace path checks are not an OS sandbox; use only in trusted workspaces.
 
 ## Visual Mode preview
 
@@ -69,6 +69,8 @@ npm run cli -- action show deploy.release
 ~~~
 
 Configuration is stored locally in ~/.madevi/config.json. Set MADEVI_HOME to use a different directory.
+
+For agent tool calls, start `madevi agent send` from the project directory. Ask, plan, review, operate, and assist modes cannot write. Build mode requires an interactive confirmation for each proposed write; non-interactive writes are denied. The provider must support OpenAI-compatible tool calling. Tool activity is not yet persisted as a complete crash-resumable transcript, and Visual Mode cannot execute these actions yet.
 
 Madevi starts with no active AI model. Select a configured profile explicitly with `model use`, or add custom provider metadata with `model add`. API keys are deliberately excluded from configuration; inject them through an OS keychain, vault, or environment provider.
 

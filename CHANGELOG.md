@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.9
+
+- Add a bounded model/tool loop for OpenAI-compatible tool-calling providers.
+- Add workspace listing and file reading; build mode can propose file writes with per-write terminal approval.
+- Tool execution is an early local implementation, not an OS sandbox; shell execution and Visual/CLI parity remain unimplemented.
+
 ## 0.1.8
 
 - Rename the product and public package identity to Madevi Harness while preserving the `madevi` command and existing repository URL.

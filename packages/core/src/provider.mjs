@@ -1,5 +1,5 @@
 /** A deliberately small OpenAI-compatible text adapter. Keys stay in the environment. */
-export async function completeWithProfile(profile, messages, { fetchImpl = fetch } = {}) {
+export async function completeWithProfile(profile, messages, { fetchImpl = fetch, tools = null, structured = false } = {}) {
   if (!profile?.baseUrl || !profile?.model || !profile?.apiKeyEnv) {
     throw new Error("Model profile is not connected. Configure baseUrl, model, and apiKeyEnv without placing the key in Madevi config.");
   }
@@ -8,11 +8,14 @@ export async function completeWithProfile(profile, messages, { fetchImpl = fetch
   const response = await fetchImpl(profile.baseUrl.replace(/\/$/, "") + "/chat/completions", {
     method: "POST",
     headers: { authorization: "Bearer " + apiKey, "content-type": "application/json" },
-    body: JSON.stringify({ model: profile.model, messages })
+    body: JSON.stringify({ model: profile.model, messages, ...(tools ? { tools } : {}) }),
+    signal: AbortSignal.timeout(120000)
   });
   if (!response.ok) throw new Error("Model provider returned " + response.status + ".");
   const payload = await response.json();
-  const content = payload?.choices?.[0]?.message?.content;
+  const message = payload?.choices?.[0]?.message;
+  if (structured && message && (typeof message.content === "string" || Array.isArray(message.tool_calls))) return message;
+  const content = message?.content;
   if (typeof content !== "string" || !content.trim()) throw new Error("Model provider returned no assistant text.");
   return content;
 }

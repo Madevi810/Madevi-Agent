@@ -11,7 +11,8 @@ import { createSystemSnapshot, monitorStatus } from "../../../services/monitor/s
 import { acknowledgeIncident, evaluateSnapshot, recordIncident } from "../../../services/monitor/src/incidents.mjs";
 import { daemonUrl, isProcessAlive, readDaemonState, removeDaemonState } from "../../../packages/core/src/daemon.mjs";
 import { appendMessage, createAgentSession, setAgentMode, systemPromptForMode } from "../../../packages/core/src/agent-session.mjs";
-import { completeWithProfile } from "../../../packages/core/src/provider.mjs";
+import { runAgentTurn } from "../../../packages/core/src/agent-loop.mjs";
+import { createInterface } from "node:readline/promises";
 
 const [command = "help", subcommand, ...remaining] = process.argv.slice(2);
 const value = remaining.join(" ");
@@ -22,7 +23,7 @@ function print(output) {
 
 function help() {
   print([
-    "Madevi Harness CLI v0.1.8",
+    "Madevi Harness CLI v0.1.9",
     "",
     "Usage:",
     "  madevi init",
@@ -55,7 +56,7 @@ function help() {
 
 async function main() {
   if (["help", "--help", "-h"].includes(command)) return help();
-  if (["version", "--version"].includes(command)) return print("Madevi Harness CLI v0.1.8");
+  if (["version", "--version"].includes(command)) return print("Madevi Harness CLI v0.1.9");
 
   const { path, config } = await readConfig();
   if (command === "init") return print({ initialized: true, configPath: path, mode: "workspace" });
@@ -206,10 +207,17 @@ async function main() {
     appendMessage(state, session.id, { role: "user", content: prompt });
     await writeState(state);
     const messages = [{ role: "system", content: systemPromptForMode(session.mode) }, ...session.messages.map(({ role, content }) => ({ role, content }))];
-    const response = await completeWithProfile(profile, messages);
-    const assistant = appendMessage(state, session.id, { role: "assistant", content: response, actor: "provider:" + profile.id });
+    const approve = async ({ path, content, bytes }) => {
+      if (!process.stdin.isTTY || !process.stderr.isTTY) return false;
+      console.error(`\nProposed replacement: ${path} (${bytes} bytes)\n--- proposed content ---\n${content}\n--- end ---`);
+      const prompt = createInterface({ input: process.stdin, output: process.stderr });
+      try { return (await prompt.question("Allow this write? [y/N] ")).trim().toLowerCase() === "y"; }
+      finally { prompt.close(); }
+    };
+    const result = await runAgentTurn({ profile, messages, root: process.cwd(), mode: session.mode, approve, onEvent: (event) => console.error(`[${event.type}] ${event.name}${event.ok === undefined ? "" : event.ok ? " ok" : " denied/failed"}`) });
+    const assistant = appendMessage(state, session.id, { role: "assistant", content: result.text, actor: "provider:" + profile.id });
     await writeState(state);
-    return print({ sessionId: session.id, mode: session.mode, assistant });
+    return print({ sessionId: session.id, mode: session.mode, steps: result.steps, workspace: process.cwd(), assistant });
   }
   if (command === "task" && subcommand === "create") {
     const { state } = await readState();
