@@ -11,11 +11,11 @@ import { closeSession, createProject, startSession } from "../src/workspace.mjs"
 import { policyDecision } from "../../policy/src/rules.mjs";
 import { evaluateSnapshot, recordIncident } from "../../../services/monitor/src/incidents.mjs";
 
-test("Madevi creates isolated default configuration", async () => {
+test("Madevi Harness creates isolated default configuration", async () => {
   const home = await mkdtemp(join(tmpdir(), "madevi-test-"));
   try {
     const first = await readConfig(home);
-    assert.equal(first.config.agent.name, "Madevi");
+    assert.equal(first.config.agent.name, "Madevi Harness");
     assert.equal(first.config.monitor.enabled, false);
     assert.equal(first.config.model.active, null);
 

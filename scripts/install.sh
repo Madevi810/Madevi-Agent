@@ -13,7 +13,7 @@ cleanup() {
 }
 
 fail() {
-  printf 'Madevi installer: %s\n' "$1" >&2
+  printf 'Madevi Harness installer: %s\n' "$1" >&2
   exit 1
 }
 
@@ -31,7 +31,7 @@ if [[ -d "$INSTALL_DIR/.git" ]]; then
     fail "Existing Madevi installation has uncommitted changes at $INSTALL_DIR. Preserve or commit them before updating."
   fi
 
-  printf 'Updating Madevi in %s...\n' "$INSTALL_DIR"
+  printf 'Updating Madevi Harness in %s...\n' "$INSTALL_DIR"
   git -C "$INSTALL_DIR" fetch --depth 1 origin main
   git -C "$INSTALL_DIR" checkout --quiet main
   git -C "$INSTALL_DIR" pull --ff-only origin main
@@ -39,7 +39,7 @@ elif [[ -e "$INSTALL_DIR" ]]; then
   fail "$INSTALL_DIR already exists but is not a Madevi Git installation."
 else
   TEMP_DIR="$(mktemp -d)"
-  printf 'Installing Madevi in %s...\n' "$INSTALL_DIR"
+  printf 'Installing Madevi Harness in %s...\n' "$INSTALL_DIR"
   git clone --depth 1 --branch main "$REPOSITORY" "$TEMP_DIR/madevi"
   mkdir -p "$(dirname "$INSTALL_DIR")"
   mv "$TEMP_DIR/madevi" "$INSTALL_DIR"
@@ -51,10 +51,10 @@ chmod +x "$BIN_DIR/madevi"
 
 "$BIN_DIR/madevi" init
 
-printf '\nMadevi is ready.\n'
+printf '\nMadevi Harness is ready.\n'
 printf 'Run: %s status\n' "$BIN_DIR/madevi"
 
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-  printf '\nAdd Madevi to your PATH to use the short command:\n'
+  printf '\nAdd Madevi Harness to your PATH to use the short command:\n'
   printf '  export PATH="$HOME/.local/bin:$PATH"\n'
 fi

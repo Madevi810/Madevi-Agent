@@ -4,7 +4,7 @@ import { join } from "node:path";
 
 export const DEFAULT_CONFIG = Object.freeze({
   schemaVersion: 1,
-  agent: { name: "Madevi", updateChannel: "stable" },
+  agent: { name: "Madevi Harness", updateChannel: "stable" },
   workspace: { activeProject: null },
   model: {
     active: null,

@@ -1,24 +1,24 @@
-# Madevi Agent
+# Madevi Harness
 
-Madevi is an open-source, self-hosted agent platform for three connected jobs:
+Madevi Harness is an open-source, self-hosted agent harness for three connected jobs:
 
 - **Workspace** — plan, inspect, edit, test, and automate project work.
 - **Deploy** — verify infrastructure, release projects, validate health, and roll back safely.
 - **Monitor Control** — optional low-cost server monitoring, incident handling, and scheduled audits.
 
-Madevi is being rebuilt around one shared runtime. CLI, Visual Mode, Telegram, and Madevi Assist will call the same action contracts, policy engine, state, and audit trail.
+It is being rebuilt around one shared runtime. CLI, Visual Mode, Telegram, and Madevi Assist call the same action contracts, policy engine, state, and audit trail. They are interfaces and first-party modules of one harness—not separate products.
 
 > Status: early foundation. The CLI in this repository is dependency-free and safe by default; it does not execute project code or server actions yet.
 
 ## Visual Mode preview
 
-![Madevi Agent Visual Mode deployment plan preview](docs/assets/madevi-studio-preview.jpg)
+![Madevi Harness Visual Mode deployment plan preview](docs/assets/madevi-studio-preview.jpg)
 
 Visual Mode is chat-first: the active task and approval flow stay in the workspace, while project, model, deploy, monitor, assistant, and security controls live in the right-side control panel. The current preview is being replaced by a daemon-backed interface.
 
 ## Runtime rebuild
 
-The repository is progressing through a public, tested rebuild from the starter into a durable agent runtime. Read the [architecture](docs/architecture-v2.md), [source benchmark](docs/reference-benchmark.md), and [release plan](docs/release-plan.md) before relying on a future capability.
+The repository is progressing through a public, tested rebuild from the starter into a durable agent harness. Read the [harness definition](docs/harness.md), [architecture](docs/architecture-v2.md), [source benchmark](docs/reference-benchmark.md), and [release plan](docs/release-plan.md) before relying on a future capability.
 
 ## Quick start
 
@@ -74,7 +74,7 @@ Madevi starts with no active AI model. Select a configured profile explicitly wi
 
 ### Local control endpoint
 
-`madevi daemon start` starts the early Madevi Core service on `http://127.0.0.1:8787`. It is loopback-only and currently exposes read-only health, status, and action-manifest endpoints. Visual Mode will become a client of this service during the rebuild.
+`madevi daemon start` starts the early Madevi Harness Core service on `http://127.0.0.1:8787`. It is loopback-only and currently exposes read-only health, status, action-manifest, and module-manifest endpoints. Visual Mode is a client of this service.
 
 ## Repository map
 
@@ -82,7 +82,7 @@ Madevi starts with no active AI model. Select a configured profile explicitly wi
 apps/cli/          Command-line interface
 apps/studio/       Legacy static preview; replaced by Visual Mode during the rebuild
 packages/contracts/ Shared action contracts for every Madevi interface
-packages/core/     Configuration and shared action contracts
+packages/core/     Harness configuration, daemon, module registry, and runtime state
 packages/policy/   Risk tiers and approval rules
 services/monitor/  Token-free system snapshot sentinel
 docs/              Architecture notes
@@ -98,4 +98,4 @@ docs/              Architecture notes
 
 ## License and brand
 
-Madevi Core uses Apache-2.0. The Madevi name and logo are not granted by that code license; publish a trademark policy before authorizing branded forks or commercial distributions.
+Madevi Harness uses Apache-2.0. The Madevi name and logo are not granted by that code license; publish a trademark policy before authorizing branded forks or commercial distributions.

@@ -1,14 +1,14 @@
-# Madevi Agent Runtime v2
+# Madevi Harness Runtime v2
 
-Madevi is one self-hosted agent runtime. CLI, Visual Mode, Telegram, and Madevi Assist are interfaces to the same daemon, state, policy, and action contracts.
+Madevi Harness is one self-hosted agent harness. CLI, Visual Mode, Telegram, and Madevi Assist are interfaces to the same daemon, state, policy, module registry, and action contracts.
 
 ## Runtime shape
 
 ~~~text
-interfaces → control gateway → agent runtime → policy → executors → audit/events
+interfaces → control gateway → harness runtime → policy → executors → audit/events
 ~~~
 
-The runtime owns sessions, context collection, model routing, tool calls, task graphs, approval pauses, retries, and recovery. Interfaces never implement their own execution logic.
+The harness owns sessions, context collection, model routing, tool calls, task graphs, approval pauses, retries, and recovery. Interfaces never implement their own execution logic.
 
 ## Surfaces
 
@@ -24,6 +24,10 @@ Visual Mode and CLI have capability parity for the same identity. A different ro
 ## Action contract
 
 Every operation declares an id, schema, area, scopes, risk, approval policy, executor, verification, rollback, and supported interfaces. `packages/contracts` is the canonical action declaration layer. Future UI buttons, CLI commands, bot commands, and assistant workflows must resolve an existing action contract.
+
+## Harness modules
+
+The first-party module registry declares Workspace, Deploy, Monitor Control, Madevi Assist, and Telegram Gateway. A module is a capability boundary and a lifecycle declaration; it grants no authority by itself. Every privileged operation still has to resolve through an action contract and policy decision.
 
 ## Modes
 

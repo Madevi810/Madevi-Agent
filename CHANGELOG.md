@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.8
+
+- Rename the product and public package identity to Madevi Harness while preserving the `madevi` command and existing repository URL.
+- Add a first-party harness module registry for Workspace, Deploy, Monitor Control, Madevi Assist, and Telegram Gateway.
+- Expose the read-only module manifest through the local daemon and Visual Mode.
+
 ## 0.1.7
 
 - Add daemon-served Madevi Agent Visual Mode with live Core status and action manifest.

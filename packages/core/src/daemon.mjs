@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { actionManifest } from "../../contracts/src/action-contract.mjs";
 import { ACTIONS } from "./actions.mjs";
+import { moduleManifest } from "./modules.mjs";
 import { madeviHome, readConfig } from "./config.mjs";
 import { readState } from "./state.mjs";
 
@@ -70,7 +71,7 @@ const visualIndex = fileURLToPath(new URL("../../../apps/visual/index.html", imp
 /** Starts a loopback-only control server. No mutation endpoint is exposed at this stage. */
 export async function startControlServer({ host = DEFAULT_HOST, port = DEFAULT_PORT, home, persist = true } = {}) {
   if (host !== "127.0.0.1" && host !== "::1" && host !== "localhost") {
-    throw new Error("Madevi control server is loopback-only. Put a verified reverse proxy in front of a VPS deployment.");
+    throw new Error("Madevi Harness control server is loopback-only. Put a verified reverse proxy in front of a VPS deployment.");
   }
   const server = createServer(async (request, response) => {
     const url = new URL(request.url || "/", daemonUrl({ host, port }));
@@ -80,8 +81,9 @@ export async function startControlServer({ host = DEFAULT_HOST, port = DEFAULT_P
       response.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" });
       return response.end(html);
     }
-    if (url.pathname === "/health") return json(response, 200, { ok: true, service: "madevi-agent" });
+    if (url.pathname === "/health") return json(response, 200, { ok: true, service: "madevi-harness" });
     if (url.pathname === "/v1/status") return json(response, 200, await controlStatus(home));
+    if (url.pathname === "/v1/modules") return json(response, 200, { modules: moduleManifest() });
     if (url.pathname === "/v1/actions") {
       const surface = url.searchParams.get("surface") || "visual";
       try {

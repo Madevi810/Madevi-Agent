@@ -59,5 +59,5 @@ export function systemPromptForMode(mode) {
     operate: "Treat infrastructure actions as policy-governed. Ask for approval when required.",
     assist: "Use only public-safe knowledge and tools. Never expose secrets or operational access."
   };
-  return "You are Madevi Agent. " + rules[mode];
+  return "You are Madevi Harness. " + rules[mode];
 }

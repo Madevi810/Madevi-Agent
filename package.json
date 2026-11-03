@@ -1,7 +1,7 @@
 {
-  "name": "@madevi/agent",
-  "version": "0.1.7",
-  "description": "Open-source agent runtime for workspace automation, deployment, and optional server monitoring.",
+  "name": "@madevi/harness",
+  "version": "0.1.8",
+  "description": "Open-source, self-hosted agent harness for workspace, deployment, assistance, and optional server operations.",
   "type": "module",
   "private": false,
   "bin": {
@@ -10,7 +10,7 @@
   "scripts": {
     "cli": "node apps/cli/bin/madevi.mjs",
     "test": "node --test",
-    "check": "node --check apps/cli/bin/madevi.mjs && node --check apps/daemon/bin/madevi-daemon.mjs && node --check packages/contracts/src/action-contract.mjs && node --check packages/core/src/actions.mjs && node --check packages/core/src/agent-session.mjs && node --check packages/core/src/config.mjs && node --check packages/core/src/daemon.mjs && node --check packages/core/src/provider.mjs && node --check packages/core/src/state.mjs && node --check packages/core/src/workflow.mjs && node --check packages/core/src/workspace.mjs && node --check packages/policy/src/rules.mjs && node --check services/monitor/src/sentinel.mjs && node --check services/monitor/src/incidents.mjs"
+    "check": "node --check apps/cli/bin/madevi.mjs && node --check apps/daemon/bin/madevi-daemon.mjs && node --check packages/contracts/src/action-contract.mjs && node --check packages/contracts/src/module-contract.mjs && node --check packages/core/src/actions.mjs && node --check packages/core/src/agent-session.mjs && node --check packages/core/src/config.mjs && node --check packages/core/src/daemon.mjs && node --check packages/core/src/modules.mjs && node --check packages/core/src/provider.mjs && node --check packages/core/src/state.mjs && node --check packages/core/src/workflow.mjs && node --check packages/core/src/workspace.mjs && node --check packages/policy/src/rules.mjs && node --check services/monitor/src/sentinel.mjs && node --check services/monitor/src/incidents.mjs"
   },
   "engines": {
     "node": ">=20"
